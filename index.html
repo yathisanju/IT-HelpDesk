@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IT Help Desk · Royal Orchid Hotels</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --maroon:        #7b1a2e;
+      --maroon-dark:   #5c1220;
+      --maroon-deep:   #3d0b18;
+      --maroon-light:  #fdf4f6;
+      --maroon-mid:    #f0d4d9;
+      --maroon-border: #dbb0ba;
+      --gold:          #c9963a;
+      --gold-pale:     #fdf3e3;
+      --bg:            #f7f2f3;
+      --surface:       #ffffff;
+      --surface2:      #fdf8f9;
+      --border:        #ecdde0;
+      --text:          #1e0a10;
+      --text-muted:    #8a5d68;
+      --success:       #166534;
+      --success-bg:    #f0fdf4;
+      --success-border:#86efac;
+      --error:         #991b1b;
+      --error-bg:      #fff0f0;
+      --error-border:  #fca5a5;
+      --radius:        10px;
+      --shadow-sm:     0 1px 3px rgba(123,26,46,.07), 0 2px 8px rgba(123,26,46,.05);
+      --shadow:        0 2px 8px rgba(123,26,46,.09), 0 6px 20px rgba(123,26,46,.06);
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── Header ─────────────────────────────────────────────────────────── */
+    .header {
+      background: linear-gradient(135deg, var(--maroon-deep) 0%, var(--maroon) 55%, #9b2242 100%);
+      height: 66px;
+      padding: 0 40px;
+      display: flex; align-items: center; gap: 16px;
+      box-shadow: 0 3px 24px rgba(61,11,24,.4);
+      position: sticky; top: 0; z-index: 200;
+    }
+    .header-logo {
+      width: 38px; height: 38px; flex-shrink: 0;
+      background: rgba(255,255,255,.13);
+      border: 1px solid rgba(255,255,255,.22);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .header-logo svg { width: 22px; height: 22px; fill: #fff; }
+    .header-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 19px; color: #fff; letter-spacing: .2px;
+    }
+    .header-pipe { width: 1px; height: 24px; background: rgba(255,255,255,.22); }
+    .header-sub  { font-size: 13px; color: rgba(255,255,255,.6); font-weight: 500; }
+    .header-chip {
+      margin-left: auto;
+      font-size: 11px; font-weight: 700; letter-spacing: .5px;
+      background: rgba(201,150,58,.2);
+      border: 1px solid rgba(201,150,58,.35);
+      color: #f5d08a;
+      padding: 4px 13px; border-radius: 20px;
+    }
+
+    /* ── Container ───────────────────────────────────────────────────────── */
+    .wrap { max-width: 1040px; margin: 0 auto; padding: 36px 24px 60px; }
+
+    .page-eyebrow {
+      font-size: 11px; font-weight: 700; letter-spacing: 1.2px;
+      text-transform: uppercase; color: var(--gold);
+      margin-bottom: 6px;
+    }
+    .page-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px; color: var(--maroon-dark);
+      margin-bottom: 6px;
+    }
+    .page-sub { font-size: 14px; color: var(--text-muted); margin-bottom: 30px; }
+
+    .rule {
+      height: 3px;
+      background: linear-gradient(90deg, var(--maroon) 0%, var(--gold) 40%, transparent 100%);
+      border-radius: 2px; margin-bottom: 30px;
+    }
+
+    /* ── Tabs ────────────────────────────────────────────────────────────── */
+    .tabs {
+      display: flex;
+      border-bottom: 2px solid var(--maroon-border);
+      margin-bottom: 30px; gap: 0;
+    }
+    .tab {
+      padding: 11px 28px;
+      font-size: 14px; font-weight: 600;
+      font-family: 'DM Sans', sans-serif;
+      border: none; background: transparent;
+      color: var(--text-muted); cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px; transition: all .15s;
+    }
+    .tab.active { color: var(--maroon); border-bottom-color: var(--maroon); }
+    .tab:hover:not(.active) { color: var(--maroon-dark); background: var(--maroon-light); }
+
+    /* ── Card ────────────────────────────────────────────────────────────── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--maroon-border);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .card-head {
+      padding: 18px 28px;
+      background: linear-gradient(90deg, var(--maroon-light), #fff 70%);
+      border-bottom: 1px solid var(--maroon-border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .card-head-title {
+      font-size: 14px; font-weight: 700; color: var(--maroon-dark);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .card-head-title svg { width: 16px; height: 16px; fill: var(--maroon); flex-shrink: 0; }
+    .card-body { padding: 30px 28px; }
+
+    /* ── Form grid ───────────────────────────────────────────────────────── */
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+    .full { grid-column: 1 / -1; }
+
+    .field { display: flex; flex-direction: column; gap: 7px; }
+    .field label {
+      font-size: 11px; font-weight: 700; letter-spacing: .7px;
+      text-transform: uppercase; color: var(--maroon);
+    }
+    .req { color: var(--gold); margin-left: 2px; }
+
+    input, select, textarea {
+      width: 100%; padding: 11px 14px;
+      border: 1.5px solid var(--maroon-border);
+      border-radius: var(--radius);
+      font-size: 14px; font-family: 'DM Sans', sans-serif;
+      color: var(--text); background: var(--surface2);
+      transition: border-color .15s, box-shadow .15s, background .15s;
+      outline: none;
+    }
+    input::placeholder, textarea::placeholder { color: #cba8b0; }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--maroon);
+      box-shadow: 0 0 0 3px rgba(123,26,46,.11);
+      background: #fff;
+    }
+    textarea { min-height: 120px; resize: vertical; }
+
+    /* ── Buttons ─────────────────────────────────────────────────────────── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 11px 26px; border-radius: var(--radius);
+      font-size: 14px; font-weight: 700; font-family: 'DM Sans', sans-serif;
+      cursor: pointer; border: none; transition: all .15s;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--maroon) 0%, var(--maroon-dark) 100%);
+      color: #fff; box-shadow: 0 3px 12px rgba(123,26,46,.32);
+    }
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #8e2037 0%, #6b1828 100%);
+      transform: translateY(-1px); box-shadow: 0 6px 20px rgba(123,26,46,.4);
+    }
+    .btn-primary:active { transform: none; }
+    .btn-ghost {
+      background: transparent; border: 1.5px solid var(--maroon-border); color: var(--maroon);
+    }
+    .btn-ghost:hover { border-color: var(--maroon); background: var(--maroon-light); }
+    .btn svg { width: 16px; height: 16px; fill: currentColor; flex-shrink: 0; }
+    .btn.loading { opacity: .6; pointer-events: none; }
+
+    .form-actions { display: flex; gap: 12px; align-items: center; margin-top: 6px; }
+
+    /* ── Toast ───────────────────────────────────────────────────────────── */
+    .toast {
+      display: none; margin-top: 18px;
+      padding: 13px 18px; border-radius: var(--radius);
+      font-size: 13px; font-weight: 500;
+      align-items: center; gap: 10px;
+    }
+    .toast.show { display: flex; }
+    .toast.ok  { background: var(--success-bg); color: var(--success); border: 1px solid var(--success-border); }
+    .toast.err { background: var(--error-bg);   color: var(--error);   border: 1px solid var(--error-border); }
+    .toast svg { width: 16px; height: 16px; fill: currentColor; flex-shrink: 0; }
+
+    /* ── Stats ───────────────────────────────────────────────────────────── */
+    .stats {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+      margin-bottom: 24px;
+    }
+    .stat {
+      background: var(--surface); border: 1px solid var(--maroon-border);
+      border-radius: 14px; padding: 18px 20px;
+      box-shadow: var(--shadow-sm); position: relative; overflow: hidden;
+    }
+    .stat::after {
+      content: ''; position: absolute;
+      top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--maroon), var(--gold));
+    }
+    .stat-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--text-muted); }
+    .stat-val   { font-size: 30px; font-weight: 700; color: var(--maroon-dark); margin-top: 6px; }
+
+    /* ── Tickets table ───────────────────────────────────────────────────── */
+    #view-tickets { display: none; }
+
+    .tbar {
+      padding: 16px 28px; border-bottom: 1px solid var(--maroon-border);
+      background: var(--maroon-light);
+    }
+    .tbar input { max-width: 320px; font-size: 13px; padding: 9px 14px; background: #fff; }
+
+    .table-scroll { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead th {
+      padding: 12px 16px; text-align: left;
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .5px; color: var(--maroon);
+      background: linear-gradient(90deg, var(--maroon-light), #fff9fa);
+      border-bottom: 1px solid var(--maroon-border);
+      white-space: nowrap;
+    }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background .1s; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: var(--maroon-light); }
+    td { padding: 12px 16px; vertical-align: middle; max-width: 200px; }
+    td.truncate { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .badge {
+      display: inline-block; padding: 3px 10px;
+      border-radius: 20px; font-size: 11px; font-weight: 700; white-space: nowrap;
+    }
+    .p-low      { background: #dcfce7; color: #15803d; }
+    .p-medium   { background: #fef9c3; color: #a16207; }
+    .p-high     { background: #ffedd5; color: #c2410c; }
+    .p-critical { background: #fee2e2; color: #991b1b; }
+
+    .rowid { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-muted); }
+
+    .empty {
+      text-align: center; padding: 60px 24px; color: var(--text-muted);
+    }
+    .empty svg { width: 44px; height: 44px; fill: var(--maroon-border); display: block; margin: 0 auto 14px; }
+
+    /* ── Responsive ──────────────────────────────────────────────────────── */
+    @media (max-width: 640px) {
+      .grid  { grid-template-columns: 1fr; }
+      .stats { grid-template-columns: 1fr 1fr; }
+      .wrap  { padding: 20px 16px 40px; }
+      .header { padding: 0 16px; }
+      .header-pipe, .header-sub { display: none; }
+      .card-body { padding: 22px 18px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="header">
+  <div class="header-logo">
+    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>
+  </div>
+  <span class="header-name">Royal Orchid Hotels</span>
+  <div class="header-pipe"></div>
+  <span class="header-sub">IT Support Portal</span>
+  <span class="header-chip">Zoho Catalyst</span>
+</header>
+
+<div class="wrap">
+  <div class="page-eyebrow">IT Department</div>
+  <h1 class="page-title">Help Desk</h1>
+  <p class="page-sub">Raise a support ticket or view the status of your existing requests.</p>
+  <div class="rule"></div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('new')">＋ &nbsp;New Ticket</button>
+    <button class="tab" onclick="switchTab('tickets')">All Tickets</button>
+  </div>
+
+  <!-- ══ NEW TICKET ══════════════════════════════════════════════════════ -->
+  <div id="view-new">
+    <div class="card">
+      <div class="card-head">
+        <span class="card-head-title">
+          <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+          Submit a Support Request
+        </span>
+      </div>
+      <div class="card-body">
+        <div class="grid">
+
+          <div class="field">
+            <label>Hotel / Property Name <span class="req">*</span></label>
+            <input id="HotelName" placeholder="e.g. Royal Orchid Central, Bengaluru" />
+          </div>
+          <div class="field">
+            <label>Full Name <span class="req">*</span></label>
+            <input id="FullName" placeholder="Your full name" />
+          </div>
+          <div class="field">
+            <label>Work Email <span class="req">*</span></label>
+            <input id="WorkEmail" type="email" placeholder="you@royalorchidhotels.com" />
+          </div>
+          <div class="field">
+            <label>Department</label>
+            <input id="Department" placeholder="e.g. Front Office, F&B, Housekeeping" />
+          </div>
+          <div class="field">
+            <label>Phone</label>
+            <input id="Phone" type="tel" placeholder="+91 98765 43210" inputmode="numeric" />
+          </div>
+          <div class="field">
+            <label>Category</label>
+            <input id="Category" placeholder="e.g. Hardware, Software, Network, Access" />
+          </div>
+          <div class="field">
+            <label>Operating System</label>
+            <input id="OperatingSystem" placeholder="e.g. Windows 11, macOS Sonoma" />
+          </div>
+          <div class="field">
+            <label>Priority</label>
+            <select id="Priority1">
+              <option value="Low">🟢  Low</option>
+              <option value="Medium" selected>🟡  Medium</option>
+              <option value="High">🟠  High</option>
+              <option value="Critical">🔴  Critical</option>
+            </select>
+          </div>
+          <div class="field full">
+            <label>Subject <span class="req">*</span></label>
+            <input id="Subject" placeholder="One-line summary of the issue" />
+          </div>
+          <div class="field full">
+            <label>Description <span class="req">*</span></label>
+            <textarea id="Discription" placeholder="Describe the issue in detail — what happened, steps to reproduce, any error messages…"></textarea>
+          </div>
+
+          <div class="full">
+            <div class="form-actions">
+              <button class="btn btn-primary" id="submitBtn" onclick="submitTicket()">
+                <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                Submit Ticket
+              </button>
+              <button class="btn btn-ghost" onclick="clearForm()">Clear</button>
+            </div>
+            <div class="toast" id="toast">
+              <svg id="toast-icon" viewBox="0 0 24 24"></svg>
+              <span id="toast-msg"></span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ ALL TICKETS ═════════════════════════════════════════════════════ -->
+  <div id="view-tickets">
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-label">Total</div>
+        <div class="stat-val" id="s-total">—</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Critical</div>
+        <div class="stat-val" id="s-critical" style="color:#991b1b">—</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">High</div>
+        <div class="stat-val" id="s-high" style="color:#c2410c">—</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Medium / Low</div>
+        <div class="stat-val" id="s-other" style="color:var(--maroon)">—</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <span class="card-head-title">
+          <svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
+          Ticket Queue
+        </span>
+        <button class="btn btn-ghost" id="refreshBtn" onclick="loadTickets()" style="padding:8px 16px;font-size:13px">
+          <svg viewBox="0 0 24 24"><path d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+          Refresh
+        </button>
+      </div>
+
+      <div class="tbar">
+        <input id="searchInput" placeholder="🔍  Search by name, hotel, subject, category…" oninput="filterTickets()" />
+      </div>
+
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Hotel</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Department</th>
+              <th>Phone</th>
+              <th>Category</th>
+              <th>OS</th>
+              <th>Priority</th>
+              <th>Subject</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+        <div id="empty" class="empty" style="display:none">
+          <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8l8 5 8-5v10zm-8-7L4 6h16l-8 5z"/></svg>
+          No tickets found
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── CONFIG ────────────────────────────────────────────────────────────────
+  // Paste your Catalyst Advanced I/O Function URL below after you create it.
+  // e.g. https://yourproject-abc123.catalystserverless.com/server/helpdesk_function
+  const CATALYST_URL = 'https://it-helpdesk1-60068587326.development.catalystserverless.in/server/helpdesk_function';
+  // ─────────────────────────────────────────────────────────────────────────
+
+  let allTickets = [];
+
+  // ── Tab switch ────────────────────────────────────────────────────────────
+  function switchTab(t) {
+    document.querySelectorAll('.tab').forEach((el, i) =>
+      el.classList.toggle('active', (t === 'new' && i === 0) || (t === 'tickets' && i === 1))
+    );
+    document.getElementById('view-new').style.display     = t === 'new'     ? '' : 'none';
+    document.getElementById('view-tickets').style.display = t === 'tickets' ? '' : 'none';
+    if (t === 'tickets') loadTickets();
+  }
+
+  // ── API ───────────────────────────────────────────────────────────────────
+  async function api(action, payload) {
+    const res = await fetch(CATALYST_URL, {
+      method:  action === 'load' ? 'GET' : 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Action': action },
+      body:    action === 'load' ? undefined : JSON.stringify(payload)
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    return res.json();
+  }
+
+  // ── Submit ────────────────────────────────────────────────────────────────
+  async function submitTicket() {
+    const g = id => document.getElementById(id).value.trim();
+
+    const payload = {
+      HotelName       : g('HotelName'),
+      FullName        : g('FullName'),
+      WorkEmail       : g('WorkEmail'),
+      Department      : g('Department'),
+      Phone           : g('Phone'),
+      Category        : g('Category'),
+      OperatingSystem : g('OperatingSystem'),
+      Priority1       : document.getElementById('Priority1').value,
+      Subject         : g('Subject'),
+      Discription     : g('Discription'),   // matches column spelling exactly
+    };
+
+    // Validate required fields
+    const required = { FullName: 'Full Name', WorkEmail: 'Work Email', Subject: 'Subject', Discription: 'Description', HotelName: 'Hotel Name' };
+    for (const [k, label] of Object.entries(required)) {
+      if (!payload[k]) { showToast('Please fill in: ' + label, 'err'); return; }
+    }
+
+    setBusy('submitBtn', true);
+    try {
+      const out = await api('save', payload);
+      if (out.ok) {
+        showToast('Ticket submitted successfully! Our IT team will be in touch shortly.', 'ok');
+        clearForm();
+      } else {
+        showToast(out.error || 'Submission failed. Please try again.', 'err');
+      }
+    } catch (e) {
+      showToast('Cannot reach the server. Please check the CATALYST_URL is configured.', 'err');
+    }
+    setBusy('submitBtn', false);
+  }
+
+  // ── Load ──────────────────────────────────────────────────────────────────
+  async function loadTickets() {
+    setBusy('refreshBtn', true);
+    try {
+      const out = await api('load');
+      allTickets = out.tickets || [];
+      renderTickets(allTickets);
+      renderStats(allTickets);
+    } catch (e) { console.error(e); }
+    setBusy('refreshBtn', false);
+  }
+
+  function renderTickets(list) {
+    const tbody = document.getElementById('tbody');
+    const empty = document.getElementById('empty');
+    tbody.innerHTML = '';
+    if (!list.length) { empty.style.display = ''; return; }
+    empty.style.display = 'none';
+    list.forEach(t => {
+      const pr  = (t.Priority1 || 'medium').toLowerCase();
+      const cls = { low:'p-low', medium:'p-medium', high:'p-high', critical:'p-critical' }[pr] || 'p-medium';
+      const tr  = document.createElement('tr');
+      tr.innerHTML = `
+        <td><span class="rowid">${esc(t.id || '—')}</span></td>
+        <td class="truncate">${esc(t.HotelName       || '—')}</td>
+        <td>${esc(t.FullName         || '—')}</td>
+        <td class="truncate">${esc(t.WorkEmail       || '—')}</td>
+        <td>${esc(t.Department       || '—')}</td>
+        <td>${esc(t.Phone            || '—')}</td>
+        <td>${esc(t.Category         || '—')}</td>
+        <td>${esc(t.OperatingSystem  || '—')}</td>
+        <td><span class="badge ${cls}">${esc(t.Priority1 || '—')}</span></td>
+        <td class="truncate">${esc(t.Subject         || '—')}</td>
+        <td class="truncate">${esc(t.Discription     || '—')}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function filterTickets() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    renderTickets(allTickets.filter(t =>
+      (t.FullName   ||'').toLowerCase().includes(q) ||
+      (t.HotelName  ||'').toLowerCase().includes(q) ||
+      (t.Subject    ||'').toLowerCase().includes(q) ||
+      (t.Category   ||'').toLowerCase().includes(q) ||
+      (t.Department ||'').toLowerCase().includes(q)
+    ));
+  }
+
+  function renderStats(list) {
+    document.getElementById('s-total').textContent    = list.length;
+    document.getElementById('s-critical').textContent = list.filter(t => (t.Priority1||'').toLowerCase() === 'critical').length;
+    document.getElementById('s-high').textContent     = list.filter(t => (t.Priority1||'').toLowerCase() === 'high').length;
+    document.getElementById('s-other').textContent    = list.filter(t => ['medium','low'].includes((t.Priority1||'').toLowerCase())).length;
+  }
+
+  // ── Helpers ───────────────────────────────────────────────────────────────
+  function showToast(msg, type) {
+    const el   = document.getElementById('toast');
+    const icon = document.getElementById('toast-icon');
+    document.getElementById('toast-msg').textContent = msg;
+    el.className = 'toast show ' + type;
+    icon.innerHTML = type === 'ok'
+      ? '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>'
+      : '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>';
+    clearTimeout(window._toastTimer);
+    window._toastTimer = setTimeout(() => el.className = 'toast', 7000);
+  }
+
+  function clearForm() {
+    ['HotelName','FullName','WorkEmail','Department','Phone','Category','OperatingSystem','Subject','Discription']
+      .forEach(id => document.getElementById(id).value = '');
+    document.getElementById('Priority1').value = 'Medium';
+  }
+
+  function setBusy(id, on) {
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle('loading', on);
+  }
+
+  function esc(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+</script>
+</body>
+</html>
