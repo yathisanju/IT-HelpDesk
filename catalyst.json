@@ -1,0 +1,15 @@
+{
+    "project": {
+        "id": "it-helpdesk1",
+        "name": "it-helpdesk1",
+        "type": "standard"
+    },
+    "functions": {
+        "targets": [
+            "helpdesk_function"
+        ],
+        "ignore": [
+            "**/node_modules/**"
+        ]
+    }
+}
