@@ -1,12 +1,12 @@
 :root {
-  --primary-color: #800000;
-  --secondary-color: #b91d47;
-  --accent-color: #d1b464;
-  --bg-color: #0f172a;
-  --card-bg: rgba(30, 41, 59, 0.7);
-  --text-color: #f1f5f9;
-  --text-muted: #94a3b8;
-  --glass-border: rgba(255, 255, 255, 0.1);
+  --primary-color: #9b1b30;
+  --secondary-color: #c0395a;
+  --accent-color: #d4a04a;
+  --bg-color: #1a0a0e;
+  --card-bg: rgba(60, 15, 25, 0.75);
+  --text-color: #f5e6e8;
+  --text-muted: #d4a0aa;
+  --glass-border: rgba(255, 200, 210, 0.15);
   --gradient: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
   --border-radius: 12px;
 }
@@ -160,13 +160,18 @@ body {
 input, select, textarea {
   width: 100%;
   padding: 0.75rem 1rem;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.92);
   border: 1px solid var(--glass-border);
   border-radius: 8px;
-  color: var(--text-color);
+  color: #3d0010;
   font-family: inherit;
   font-size: 1rem;
   transition: all 0.3s;
+}
+
+select option {
+  background: #fff;
+  color: #3d0010;
 }
 
 input:focus, select:focus, textarea:focus {
