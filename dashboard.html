@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Royal Orchid IT Help Desk</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #9b1b30;
+            --secondary: #c0395a;
+            --gradient: linear-gradient(135deg, #9b1b30, #c0395a);
+            --bg: #1a0a0e;
+            --card-bg: rgba(60, 15, 25, 0.75);
+            --text: #f5e6e8;
+            --muted: #d4a0aa;
+            --border: rgba(255, 200, 210, 0.15);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* ── Navbar ── */
+        .navbar {
+            background: rgba(26, 10, 14, 0.95);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand img { height: 42px; }
+
+        .brand-text h2 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text);
+            line-height: 1;
+        }
+
+        .brand-text span {
+            font-size: 0.65rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .admin-badge {
+            background: var(--gradient);
+            color: white;
+            padding: 0.3rem 0.85rem;
+            border-radius: 999px;
+            font-size: 0.78rem;
+            font-weight: 600;
+        }
+
+        .btn-logout {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--muted);
+            padding: 0.4rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .btn-logout:hover {
+            border-color: var(--primary);
+            color: var(--text);
+        }
+
+        /* ── Main Layout ── */
+        .main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* ── Stats Row ── */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            backdrop-filter: blur(12px);
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .stat-icon.total { background: linear-gradient(135deg, #9b1b30, #c0395a); }
+        .stat-icon.open { background: linear-gradient(135deg, #d97706, #f59e0b); }
+        .stat-icon.closed { background: linear-gradient(135deg, #059669, #10b981); }
+        .stat-icon.critical { background: linear-gradient(135deg, #dc2626, #ef4444); }
+
+        .stat-info h3 {
+            font-size: 2rem;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-info p {
+            font-size: 0.8rem;
+            color: var(--muted);
+            font-weight: 500;
+        }
+
+        /* ── Toolbar ── */
+        .toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.25rem;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .toolbar h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .toolbar-right {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .search-input {
+            padding: 0.55rem 1rem;
+            border-radius: 8px;
+            border: 1px solid #c08090;
+            background: #fff;
+            color: #1a0005;
+            font-family: inherit;
+            font-size: 0.9rem;
+            width: 250px;
+        }
+
+        .filter-select {
+            padding: 0.55rem 1rem;
+            border-radius: 8px;
+            border: 1px solid #c08090;
+            background: #fff;
+            color: #1a0005;
+            font-family: inherit;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .btn-refresh {
+            background: var(--gradient);
+            color: white;
+            border: none;
+            padding: 0.55rem 1.25rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        .btn-refresh:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        /* ── Table ── */
+        .table-wrapper {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            backdrop-filter: blur(12px);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: rgba(155, 27, 48, 0.3);
+        }
+
+        thead th {
+            padding: 1rem 1.25rem;
+            text-align: left;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tbody tr {
+            border-bottom: 1px solid var(--border);
+            transition: background 0.2s;
+        }
+
+        tbody tr:last-child { border-bottom: none; }
+        tbody tr:hover { background: rgba(155, 27, 48, 0.12); }
+
+        tbody td {
+            padding: 1rem 1.25rem;
+            font-size: 0.88rem;
+            vertical-align: middle;
+        }
+
+        .col-id { color: var(--muted); font-family: monospace; font-size: 0.78rem; }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.7rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-low { background: rgba(34,197,94,0.2); color: #4ade80; }
+        .badge-medium { background: rgba(234,179,8,0.2); color: #fbbf24; }
+        .badge-high { background: rgba(249,115,22,0.2); color: #fb923c; }
+        .badge-critical { background: rgba(239,68,68,0.2); color: #f87171; }
+        .badge-open { background: rgba(59,130,246,0.2); color: #60a5fa; }
+        .badge-closed { background: rgba(34,197,94,0.2); color: #4ade80; }
+
+        .btn-close-ticket {
+            background: transparent;
+            border: 1px solid rgba(34,197,94,0.4);
+            color: #4ade80;
+            padding: 0.3rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.78rem;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        .btn-close-ticket:hover { background: rgba(34,197,94,0.15); }
+        .btn-close-ticket:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        /* ── Loading / Empty State ── */
+        .loading-state, .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--muted);
+        }
+
+        .loading-state .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .empty-icon { font-size: 3rem; margin-bottom: 1rem; }
+
+        /* ── Toast ── */
+        .toast {
+            position: fixed;
+            bottom: 2rem; right: 2rem;
+            background: #059669;
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            transform: translateY(150%);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 999;
+        }
+
+        .toast.show { transform: translateY(0); }
+
+        @media (max-width: 900px) {
+            .stats-row { grid-template-columns: repeat(2, 1fr); }
+            .search-input { width: 150px; }
+            table { font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="brand">
+            <img src="logo.jpg" alt="Logo">
+            <div class="brand-text">
+                <h2>Royal Orchid Hotels</h2>
+                <span>Admin Dashboard</span>
+            </div>
+        </div>
+        <div class="nav-right">
+            <span class="admin-badge">🔐 Super Admin</span>
+            <button class="btn-logout" onclick="logout()">Sign Out</button>
+        </div>
+    </nav>
+
+    <div class="main">
+
+        <!-- Stats -->
+        <div class="stats-row" id="statsRow">
+            <div class="stat-card">
+                <div class="stat-icon total">🎫</div>
+                <div class="stat-info">
+                    <h3 id="statTotal">—</h3>
+                    <p>Total Tickets</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon open">📂</div>
+                <div class="stat-info">
+                    <h3 id="statOpen">—</h3>
+                    <p>Open Tickets</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon closed">✅</div>
+                <div class="stat-info">
+                    <h3 id="statClosed">—</h3>
+                    <p>Closed Tickets</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon critical">🚨</div>
+                <div class="stat-info">
+                    <h3 id="statCritical">—</h3>
+                    <p>Critical Priority</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <h2>📋 All Support Tickets</h2>
+            <div class="toolbar-right">
+                <input type="text" class="search-input" id="searchInput" placeholder="🔍  Search tickets...">
+                <select class="filter-select" id="filterPriority">
+                    <option value="">All Priorities</option>
+                    <option value="Critical">Critical</option>
+                    <option value="High">High</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Low">Low</option>
+                </select>
+                <select class="filter-select" id="filterStatus">
+                    <option value="">All Statuses</option>
+                    <option value="open">Open</option>
+                    <option value="closed">Closed</option>
+                </select>
+                <button class="btn-refresh" onclick="loadTickets()">↻ Refresh</button>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="table-wrapper">
+            <div class="loading-state" id="loadingState">
+                <div class="spinner"></div>
+                <p>Loading tickets...</p>
+            </div>
+            <div class="empty-state" id="emptyState" style="display:none;">
+                <div class="empty-icon">📭</div>
+                <p>No tickets found.</p>
+            </div>
+            <table id="ticketTable" style="display:none;">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Hotel</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Category</th>
+                        <th>Subject</th>
+                        <th>Priority</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="ticketBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const API_URL = 'https://it-helpdesk1-60068587326.development.catalystserverless.in/server/helpdesk_function/';
+        let allTickets = [];
+
+        // ── Auth Guard ──
+        if (sessionStorage.getItem('admin_logged_in') !== 'true') {
+            window.location.href = 'admin.html';
+        }
+
+        function logout() {
+            sessionStorage.removeItem('admin_logged_in');
+            sessionStorage.removeItem('admin_email');
+            window.location.href = 'admin.html';
+        }
+
+        // ── Load Tickets ──
+        async function loadTickets() {
+            document.getElementById('loadingState').style.display = 'block';
+            document.getElementById('ticketTable').style.display = 'none';
+            document.getElementById('emptyState').style.display = 'none';
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'GET',
+                    headers: { 'x-action': 'load' }
+                });
+                const result = await response.json();
+
+                if (result.ok && result.tickets) {
+                    allTickets = result.tickets;
+                    updateStats(allTickets);
+                    renderTable(allTickets);
+                } else {
+                    throw new Error(result.error || 'Failed to load');
+                }
+            } catch (err) {
+                document.getElementById('loadingState').style.display = 'none';
+                document.getElementById('emptyState').style.display = 'block';
+                document.getElementById('emptyState').innerHTML = `<div class="empty-icon">⚠️</div><p>Error: ${err.message}</p>`;
+            }
+        }
+
+        function updateStats(tickets) {
+            document.getElementById('statTotal').textContent = tickets.length;
+            document.getElementById('statOpen').textContent = tickets.filter(t => (t.Status || 'open').toLowerCase() !== 'closed').length;
+            document.getElementById('statClosed').textContent = tickets.filter(t => (t.Status || 'open').toLowerCase() === 'closed').length;
+            document.getElementById('statCritical').textContent = tickets.filter(t => t.Priority1 === 'Critical').length;
+        }
+
+        function renderTable(tickets) {
+            document.getElementById('loadingState').style.display = 'none';
+
+            if (tickets.length === 0) {
+                document.getElementById('emptyState').style.display = 'block';
+                return;
+            }
+
+            document.getElementById('ticketTable').style.display = 'table';
+            const tbody = document.getElementById('ticketBody');
+            tbody.innerHTML = '';
+
+            tickets.forEach((t, i) => {
+                const status = (t.Status || 'open').toLowerCase();
+                const priority = t.Priority1 || 'Medium';
+                const isClosed = status === 'closed';
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="col-id">${t.ROWID || (i + 1)}</td>
+                    <td>${t.HotelName || '—'}</td>
+                    <td>${t.FullName || '—'}</td>
+                    <td>${t.WorkEmail || '—'}</td>
+                    <td>${t.Category || '—'}</td>
+                    <td title="${t.Discription || ''}">${t.Subject || '—'}</td>
+                    <td><span class="badge badge-${priority.toLowerCase()}">${priority}</span></td>
+                    <td><span class="badge badge-${status}">${status.charAt(0).toUpperCase() + status.slice(1)}</span></td>
+                    <td>
+                        <button class="btn-close-ticket" 
+                            onclick="closeTicket('${t.ROWID}', this)" 
+                            ${isClosed ? 'disabled' : ''}>
+                            ${isClosed ? '✓ Closed' : 'Mark Closed'}
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // ── Close a Ticket ──
+        async function closeTicket(rowId, btn) {
+            btn.disabled = true;
+            btn.textContent = 'Closing...';
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-action': 'close'
+                    },
+                    body: JSON.stringify({ rowId })
+                });
+                const result = await response.json();
+
+                if (result.ok) {
+                    btn.textContent = '✓ Closed';
+                    // Update parent badge
+                    const row = btn.closest('tr');
+                    const statusCell = row.cells[7];
+                    statusCell.innerHTML = '<span class="badge badge-closed">Closed</span>';
+                    // Update local data
+                    const ticket = allTickets.find(t => String(t.ROWID) === String(rowId));
+                    if (ticket) ticket.Status = 'closed';
+                    updateStats(allTickets);
+                    showToast('✅ Ticket marked as closed!');
+                } else {
+                    throw new Error(result.error);
+                }
+            } catch (err) {
+                btn.disabled = false;
+                btn.textContent = 'Mark Closed';
+                showToast('❌ Failed: ' + err.message, '#dc2626');
+            }
+        }
+
+        // ── Search & Filter ──
+        function applyFilters() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const priority = document.getElementById('filterPriority').value;
+            const status = document.getElementById('filterStatus').value;
+
+            const filtered = allTickets.filter(t => {
+                const matchSearch = !search || 
+                    (t.FullName || '').toLowerCase().includes(search) ||
+                    (t.Subject || '').toLowerCase().includes(search) ||
+                    (t.HotelName || '').toLowerCase().includes(search) ||
+                    (t.WorkEmail || '').toLowerCase().includes(search);
+                const matchPriority = !priority || t.Priority1 === priority;
+                const matchStatus = !status || (t.Status || 'open').toLowerCase() === status;
+                return matchSearch && matchPriority && matchStatus;
+            });
+
+            renderTable(filtered);
+        }
+
+        document.getElementById('searchInput').addEventListener('input', applyFilters);
+        document.getElementById('filterPriority').addEventListener('change', applyFilters);
+        document.getElementById('filterStatus').addEventListener('change', applyFilters);
+
+        // ── Toast ──
+        function showToast(message, color = '#059669') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.style.background = color;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3500);
+        }
+
+        // ── Init ──
+        loadTickets();
+    </script>
+</body>
+</html>
