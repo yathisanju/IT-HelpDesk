@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const submitBtn = document.getElementById('submitBtn');
     const toast = document.getElementById('toast');
 
-    // Live Catalyst function URL
+    // Live Zoho Catalyst API URL
     const API_URL = 'https://it-helpdesk1-60068587326.development.catalystserverless.in/server/helpdesk_function/';
 
     ticketForm.addEventListener('submit', async (e) => {
@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
             Priority1: document.getElementById('priority').value,
             Subject: document.getElementById('subject').value,
             Discription: document.getElementById('description').value,
-            Phone: 'N/A', // Default values for missing UI fields
+            Phone: '0', // Phone must be a bigint for Zoho Catalyst
             OperatingSystem: 'Unknown'
         };
 
