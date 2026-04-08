@@ -428,6 +428,26 @@
                 <tbody id="ticketBody"></tbody>
             </table>
         </div>
+
+        <!-- System Users (Super Admin Only) -->
+        <div id="usersSection" style="display:none; margin-top: 3rem;">
+            <div class="toolbar">
+                <h2>👥 System Users (IT Admins)</h2>
+            </div>
+            <div class="table-wrapper">
+                <table id="usersTable">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Assigned Hotel</th>
+                            <th>Role</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersBody"></tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
     <div class="toast" id="toast"></div>
@@ -463,11 +483,11 @@
                         <option value="Royal Orchid Central, Pune">Royal Orchid Central, Pune</option>
                         <option value="Royal Orchid Metropole, Mysore">Royal Orchid Metropole, Mysore</option>
                         <option value="Royal Orchid Brindavan, Mysore">Royal Orchid Brindavan, Mysore</option>
-                        <option value="Royal Orchid Beach Resort & Spa - Goa">Royal Orchid Beach Resort & Spa - Goa</option>
+                        <option value="Royal Orchid Beach Resort &amp; Spa - Goa">Royal Orchid Beach Resort &amp; Spa - Goa</option>
                         <option value="Royal Orchid Central - Hospet">Royal Orchid Central - Hospet</option>
                         <option value="Hotel Royal Orchid Jaipur">Hotel Royal Orchid Jaipur</option>
-                        <option value="Royal Orchid Resorts & Convention Centre">Royal Orchid Resorts & Convention Centre</option>
-                        <option value="Regenta Central Hotel & Convention Centre">Regenta Central Hotel & Convention Centre</option>
+                        <option value="Royal Orchid Resorts &amp; Convention Centre">Royal Orchid Resorts &amp; Convention Centre</option>
+                        <option value="Regenta Central Hotel &amp; Convention Centre">Regenta Central Hotel &amp; Convention Centre</option>
                         <option value="Regenta Central Imperial Goa">Regenta Central Imperial Goa</option>
                         <option value="Regenta Central Grand Exotica, Pune">Regenta Central Grand Exotica, Pune</option>
                         <option value="Regebta Suits Gurugram">Regebta Suits Gurugram</option>
@@ -498,6 +518,8 @@
         document.getElementById('roleBadge').textContent = `🔐 ${userRole}`;
         if (userRole === 'Super Admin') {
             document.getElementById('manageUsersBtn').style.display = 'inline-block';
+            document.getElementById('usersSection').style.display = 'block';
+            loadUsers();
         }
 
         function logout() {
@@ -537,6 +559,7 @@
                     showToast('✅ User created successfully!');
                     toggleUserModal(false);
                     document.getElementById('userForm').reset();
+                    loadUsers(); // Refresh the list
                 } else {
                     throw new Error(res.error);
                 }
@@ -547,6 +570,36 @@
                 btn.textContent = 'Create User Account';
             }
         });
+
+        // ── Load Users ──
+        async function loadUsers() {
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'GET',
+                    headers: { 
+                        'x-action': 'getusers',
+                        'x-role': userRole
+                    }
+                });
+                const result = await response.json();
+                if (result.ok) {
+                    const tbody = document.getElementById('usersBody');
+                    tbody.innerHTML = '';
+                    result.users.forEach(u => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${u.name || '-'}</td>
+                            <td>${u.email}</td>
+                            <td>${u.hotel || 'All Hotels'}</td>
+                            <td><span class="badge badge-open">${u.role}</span></td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                }
+            } catch (err) {
+                console.error('Failed to load users:', err);
+            }
+        }
 
         // ── Load Tickets ──
         async function loadTickets() {
