@@ -76,6 +76,10 @@
                             <input type="text" id="department" placeholder="IT, Accounts, Front Office..." required>
                         </div>
                         <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" id="phone" placeholder="Enter your mobile number" required pattern="[0-9]{10,15}">
+                        </div>
+                        <div class="form-group">
                             <label for="category">Support Category</label>
                             <select id="category" required>
                                 <option value="" disabled selected>Select Category...</option>
@@ -107,17 +111,7 @@
                         <textarea id="description" rows="5" placeholder="Please provide details to help us diagnose the issue faster..." required></textarea>
                     </div>
 
-                    <div class="form-group mt-large">
-                        <label for="screenshot">Attach Screenshot or Photo (Optional)</label>
-                        <div style="background: rgba(255,255,255,0.05); border: 2px dashed var(--border); border-radius: 12px; padding: 1.5rem; text-align: center; transition: all 0.3s; cursor: pointer;" onclick="document.getElementById('screenshot').click()" id="uploadZone">
-                            <input type="file" id="screenshot" accept="image/*" style="display: none;" onchange="handleFileSelect(this)">
-                            <div id="uploadPlaceholder">
-                                <span style="font-size: 2rem; display: block; margin-bottom: 0.5rem;">📸</span>
-                                <span style="color: var(--muted); font-size: 0.9rem;">Click to upload or drag and drop</span>
-                            </div>
-                            <div id="fileNameDisplay" style="display: none; color: #4ade80; font-weight: 600;"></div>
-                        </div>
-                    </div>
+                    <div class="form-footer mt-xlarge">
 
                     <div class="form-footer mt-xlarge">
                         <button type="submit" class="btn btn-primary" id="submitBtn">

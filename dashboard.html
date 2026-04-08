@@ -419,11 +419,11 @@
                         <th>Hotel</th>
                         <th>Name</th>
                         <th>Email</th>
+                        <th>Phone</th>
                         <th>Category</th>
                         <th>Subject</th>
                         <th>Priority</th>
                         <th>Status</th>
-                        <th>Attachment</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -665,13 +665,11 @@
                     <td>${t.HotelName || '—'}</td>
                     <td>${t.FullName || '—'}</td>
                     <td>${t.WorkEmail || '—'}</td>
+                    <td>${t.Phone || '—'}</td>
                     <td>${t.Category || '—'}</td>
                     <td title="${t.Discription || ''}">${t.Subject || '—'}</td>
                     <td><span class="badge badge-${priority.toLowerCase()}">${priority}</span></td>
                     <td><span class="badge badge-${status}">${status.charAt(0).toUpperCase() + status.slice(1)}</span></td>
-                    <td>
-                        ${t.ScreenshotURL ? `<a href="${t.ScreenshotURL}" target="_blank" style="color:var(--secondary); text-decoration:none; font-weight:600; font-size: 0.8rem;">🖼️ View</a>` : '<span style="color:var(--muted); font-size: 0.75rem;">None</span>'}
-                    </td>
                     <td>
                         <button class="btn-close-ticket" 
                             onclick="closeTicket('${t.id}', this)" 
