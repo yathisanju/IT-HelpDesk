@@ -227,12 +227,14 @@
     </div>
 
     <script>
+        const API_URL = 'https://it-helpdesk1-60068587326.development.catalystserverless.in/server/helpdesk_function/';
+
         // Check if already logged in
         if (sessionStorage.getItem('admin_logged_in') === 'true') {
             window.location.href = 'dashboard.html';
         }
 
-        document.getElementById('loginForm').addEventListener('submit', (e) => {
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('email').value.trim().toLowerCase();
             const password = document.getElementById('password').value;
@@ -243,18 +245,34 @@
             btn.textContent = 'Signing in...';
             errorMsg.style.display = 'none';
 
-            // Simulate network delay for realism
-            setTimeout(() => {
-                if (email === 'it@royalorchidhotels.com' && password === 'Creater@2026') {
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-action': 'login'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const result = await response.json();
+
+                if (result.ok) {
                     sessionStorage.setItem('admin_logged_in', 'true');
                     sessionStorage.setItem('admin_email', email);
+                    sessionStorage.setItem('admin_role', result.role);
+                    sessionStorage.setItem('admin_hotel', result.hotel || '');
+                    sessionStorage.setItem('admin_name', result.name || 'Admin');
                     window.location.href = 'dashboard.html';
                 } else {
-                    errorMsg.style.display = 'block';
-                    btn.disabled = false;
-                    btn.textContent = 'Sign In';
+                    throw new Error(result.error || 'Invalid credentials');
                 }
-            }, 800);
+            } catch (err) {
+                errorMsg.textContent = '❌ ' + err.message;
+                errorMsg.style.display = 'block';
+                btn.disabled = false;
+                btn.textContent = 'Sign In';
+            }
         });
     </script>
 </body>
