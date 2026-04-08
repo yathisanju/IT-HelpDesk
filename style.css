@@ -160,25 +160,38 @@ body {
 input, select, textarea {
   width: 100%;
   padding: 0.75rem 1rem;
-  background: rgba(255, 255, 255, 0.92);
-  border: 1px solid var(--glass-border);
+  background: #ffffff;
+  border: 1px solid #c08090;
   border-radius: 8px;
-  color: #3d0010;
+  color: #1a0005;
   font-family: inherit;
   font-size: 1rem;
+  font-weight: 500;
   transition: all 0.3s;
 }
 
 select option {
-  background: #fff;
-  color: #3d0010;
+  background: #ffffff;
+  color: #1a0005;
+  font-weight: 500;
+}
+
+select option:hover,
+select option:focus,
+select option:checked {
+  background: #9b1b30;
+  color: #ffffff;
+}
+
+input::placeholder, textarea::placeholder {
+  color: #999;
 }
 
 input:focus, select:focus, textarea:focus {
   outline: none;
   border-color: var(--primary-color);
-  background: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(155, 27, 48, 0.25);
 }
 
 .mt-large { margin-top: 1.5rem; }
