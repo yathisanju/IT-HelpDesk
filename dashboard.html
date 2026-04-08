@@ -341,6 +341,7 @@
         </div>
         <div class="nav-right">
             <span class="admin-badge" id="roleBadge">🔐 Admin</span>
+            <button class="btn-refresh" id="clearAllBtn" style="display:none; background: #dc2626; margin-right: 0.5rem;" onclick="clearAllTickets()">🗑️ Clear All Tickets</button>
             <button class="btn-refresh" id="manageUsersBtn" style="display:none; background: var(--secondary); margin-right: 0.5rem;" onclick="toggleUserModal(true)">👥 Manage Users</button>
             <button class="btn-logout" onclick="logout()">Sign Out</button>
         </div>
@@ -518,6 +519,7 @@
         document.getElementById('roleBadge').textContent = `🔐 ${userRole}`;
         if (userRole === 'Super Admin') {
             document.getElementById('manageUsersBtn').style.display = 'inline-block';
+            document.getElementById('clearAllBtn').style.display = 'inline-block';
             document.getElementById('usersSection').style.display = 'block';
             loadUsers();
         }
@@ -747,6 +749,37 @@
             toast.style.background = color;
             toast.classList.add('show');
             setTimeout(() => toast.classList.remove('show'), 3500);
+        }
+
+        // ── Clear All Tickets ──
+        async function clearAllTickets() {
+            if (!confirm('🛑 WARNING: This will permanently delete ALL tickets from the database. Are you sure?')) return;
+
+            const btn = document.getElementById('clearAllBtn');
+            btn.disabled = true;
+            btn.textContent = 'Clearing...';
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'x-action': 'cleartickets',
+                        'x-role': userRole
+                    }
+                });
+                const result = await response.json();
+                if (result.ok) {
+                    showToast(`🗑️ Successfully cleared ${result.deletedCount} tickets!`);
+                    loadTickets(); // Refresh view
+                } else {
+                    throw new Error(result.error);
+                }
+            } catch (err) {
+                showToast('❌ Failed: ' + err.message, '#dc2626');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '🗑️ Clear All Tickets';
+            }
         }
 
         // ── Init ──
