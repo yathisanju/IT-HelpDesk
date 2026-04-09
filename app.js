@@ -5,6 +5,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const API_URL = 'https://it-helpdesk1-60068587326.development.catalystserverless.in/server/helpdesk_function/';
 
+    const toBase64 = file => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = error => reject(error);
+    });
+
     ticketForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
@@ -13,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
         submitBtn.textContent = 'Submitting...';
 
         try {
-            // 3. Submit Ticket
+            const fileInput = document.getElementById('screenshot');
             const formData = {
                 HotelName: document.getElementById('hotelName').value,
                 FullName: document.getElementById('fullName').value,
@@ -22,10 +29,36 @@ document.addEventListener('DOMContentLoaded', () => {
                 Phone: document.getElementById('phone').value,
                 Category: document.getElementById('category').value,
                 Priority1: document.getElementById('priority').value,
-                Subject: document.getElementById('subject').value,
                 Discription: document.getElementById('description').value,
-                OperatingSystem: 'Unknown'
+                OperatingSystem: 'Unknown',
+                ticketattachementlink: ''
             };
+
+            // 2.5 Handle File Upload if exists
+            if (fileInput && fileInput.files.length > 0) {
+                submitBtn.textContent = 'Uploading Screenshot...';
+                const file = fileInput.files[0];
+                const base64Data = await toBase64(file);
+                
+                const uploadRes = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-Action': 'upload' },
+                    body: JSON.stringify({
+                        fileName: file.name,
+                        fileData: base64Data
+                    })
+                });
+                
+                const uploadResult = await uploadRes.json();
+                if (uploadResult.ok) {
+                    formData.ticketattachementlink = uploadResult.downloadUrl;
+                } else {
+                    throw new Error('Screenshot upload failed: ' + uploadResult.error);
+                }
+            }
+
+            // 3. Submit Ticket
+            submitBtn.textContent = 'Saving Ticket...';
 
             const response = await fetch(API_URL, {
                 method: 'POST',

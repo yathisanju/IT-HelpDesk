@@ -102,13 +102,14 @@
                     </div>
 
                     <div class="form-group mt-large">
-                        <label for="subject">Issue Subject</label>
-                        <input type="text" id="subject" placeholder="Summarize your issue..." required>
+                        <label for="description">Detailed Description</label>
+                        <textarea id="description" rows="5" placeholder="Please provide details to help us diagnose the issue faster..." required></textarea>
                     </div>
 
                     <div class="form-group mt-large">
-                        <label for="description">Detailed Description</label>
-                        <textarea id="description" rows="5" placeholder="Please provide details to help us diagnose the issue faster..." required></textarea>
+                        <label for="screenshot">Screenshot / Image Attachment (Optional)</label>
+                        <input type="file" id="screenshot" accept="image/*" class="file-input">
+                        <p class="file-help">Supported formats: JPG, PNG, GIF</p>
                     </div>
 
                     <div class="form-footer mt-xlarge">
