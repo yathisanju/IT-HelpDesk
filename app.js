@@ -12,6 +12,20 @@ document.addEventListener('DOMContentLoaded', () => {
         reader.onerror = error => reject(error);
     });
 
+    /** When user clicks Submit — Catalyst DateTime: YYYY-MM-DD HH:mm:ss (IST) */
+    function loggedTimeAtSubmit() {
+        return new Date().toLocaleString('sv-SE', {
+            timeZone: 'Asia/Kolkata',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+        }).replace('T', ' ').replace(',', '').trim();
+    }
+
     ticketForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
@@ -56,6 +70,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     throw new Error('Screenshot upload failed: ' + uploadResult.error);
                 }
             }
+
+            formData.LoggedTimeAndDate = loggedTimeAtSubmit();
 
             // 3. Submit Ticket
             submitBtn.textContent = 'Saving Ticket...';
