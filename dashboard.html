@@ -212,13 +212,22 @@
             background: var(--card-bg);
             border: 1px solid var(--border);
             border-radius: 14px;
-            overflow: hidden;
+            overflow-x: auto;
+            overflow-y: visible;
+            -webkit-overflow-scrolling: touch;
             backdrop-filter: blur(12px);
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
+            min-width: 1520px;
+        }
+
+        .col-datetime {
+            white-space: nowrap;
+            font-size: 0.82rem;
+            color: var(--muted);
         }
 
         thead {
@@ -281,6 +290,21 @@
 
         .btn-close-ticket:hover { background: rgba(34,197,94,0.15); }
         .btn-close-ticket:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        .shot-link {
+            color: #7dd3fc;
+            font-weight: 600;
+            text-decoration: underline;
+            white-space: nowrap;
+        }
+        .shot-link:hover { color: #bae6fd; }
+        .shot-none { color: var(--muted); font-size: 0.82rem; }
+
+        .table-scroll-hint {
+            font-size: 0.75rem;
+            color: var(--muted);
+            margin: 0 0 0.5rem 0.25rem;
+        }
 
         /* ── Loading / Empty State ── */
         .loading-state, .empty-state {
@@ -402,6 +426,8 @@
             </div>
         </div>
 
+        <p class="table-scroll-hint">Tip: scroll horizontally inside the table area to see Screenshot and Action columns.</p>
+
         <!-- Table -->
         <div class="table-wrapper">
             <div class="loading-state" id="loadingState">
@@ -424,6 +450,9 @@
                         <th>Subject</th>
                         <th>Priority</th>
                         <th>Status</th>
+                        <th>Logged</th>
+                        <th>Closed</th>
+                        <th>Screenshot</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -642,6 +671,32 @@
             document.getElementById('statCritical').textContent = tickets.filter(t => t.Priority1 === 'Critical').length;
         }
 
+        function getScreenshotLink(t) {
+            return (
+                t.ticketattachementlink ||
+                t.ticketattachmentlink ||
+                t.ticketAttachmentLink ||
+                t.attachmentLink ||
+                ''
+            ).trim();
+        }
+
+        function screenshotCellHtml(t) {
+            const link = getScreenshotLink(t);
+            if (!link) return '<span class="shot-none">No file</span>';
+            if (/^https?:\/\//i.test(link)) {
+                return `<a class="shot-link" href="${link.replace(/"/g, '&quot;')}" target="_blank" rel="noopener">View</a>`;
+            }
+            return `<span class="shot-none" title="${String(link).replace(/"/g, '&quot;')}">File ID</span>`;
+        }
+
+        function formatDateTimeDisplay(v) {
+            if (!v) return '—';
+            const d = new Date(v);
+            if (Number.isNaN(d.getTime())) return String(v);
+            return d.toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+        }
+
         function renderTable(tickets) {
             document.getElementById('loadingState').style.display = 'none';
 
@@ -670,6 +725,9 @@
                     <td title="${t.Discription || ''}">${t.Subject || '—'}</td>
                     <td><span class="badge badge-${priority.toLowerCase()}">${priority}</span></td>
                     <td><span class="badge badge-${status}">${status.charAt(0).toUpperCase() + status.slice(1)}</span></td>
+                    <td class="col-datetime">${formatDateTimeDisplay(t.LoggedTimeAndDate)}</td>
+                    <td class="col-datetime">${formatDateTimeDisplay(t.ClosedTimeAndDate)}</td>
+                    <td>${screenshotCellHtml(t)}</td>
                     <td>
                         <button class="btn-close-ticket" 
                             onclick="closeTicket('${t.id}', this)" 
@@ -701,13 +759,17 @@
 
                 if (result.ok) {
                     btn.textContent = '✓ Closed';
-                    // Update parent badge
+                    const closedIso = result.ClosedTimeAndDate || new Date().toISOString();
                     const row = btn.closest('tr');
-                    const statusCell = row.cells[7];
+                    const statusCell = row.cells[8];
                     statusCell.innerHTML = '<span class="badge badge-closed">Closed</span>';
-                    // Update local data
+                    const closedCell = row.cells[10];
+                    closedCell.textContent = formatDateTimeDisplay(closedIso);
                     const ticket = allTickets.find(t => String(t.id) === String(rowId));
-                    if (ticket) ticket.Status = 'closed';
+                    if (ticket) {
+                        ticket.Status = 'closed';
+                        ticket.ClosedTimeAndDate = closedIso;
+                    }
                     updateStats(allTickets);
                     showToast('✅ Ticket marked as closed!');
                 } else {
