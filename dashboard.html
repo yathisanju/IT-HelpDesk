@@ -410,6 +410,9 @@
             <h2>📋 All Support Tickets</h2>
             <div class="toolbar-right">
                 <input type="text" class="search-input" id="searchInput" placeholder="🔍  Search tickets...">
+                <select class="filter-select" id="filterProperty" style="max-width: 200px;">
+                    <option value="">All Properties</option>
+                </select>
                 <select class="filter-select" id="filterPriority">
                     <option value="">All Priorities</option>
                     <option value="Critical">Critical</option>
@@ -503,7 +506,14 @@
                     <label style="display:block; font-size:0.8rem; color:var(--muted); margin-bottom:0.5rem;">Password</label>
                     <input type="password" id="userPass" required style="width:100%; padding:0.8rem; border-radius:8px; border:1px solid #c08090; background:#fff; color:#1a0005;">
                 </div>
-                <div style="margin-bottom:1.5rem;">
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block; font-size:0.8rem; color:var(--muted); margin-bottom:0.5rem;">Admin Role</label>
+                    <select id="userRoleType" required style="width:100%; padding:0.8rem; border-radius:8px; border:1px solid #c08090; background:#fff; color:#1a0005;" onchange="document.getElementById('hotelSelectContainer').style.display = this.value === 'Global Admin' ? 'none' : 'block'; document.getElementById('userHotel').required = this.value !== 'Global Admin';">
+                        <option value="Hotel Admin" selected>Hotel Admin (Restricted to specific hotel)</option>
+                        <option value="Global Admin">Global Admin (Access to all tickets & properties)</option>
+                    </select>
+                </div>
+                <div id="hotelSelectContainer" style="margin-bottom:1.5rem;">
                     <label style="display:block; font-size:0.8rem; color:var(--muted); margin-bottom:0.5rem;">Assigned Hotel</label>
                     <select id="userHotel" required style="width:100%; padding:0.8rem; border-radius:8px; border:1px solid #c08090; background:#fff; color:#1a0005;">
                         <option value="" disabled selected>Select Hotel...</option>
@@ -573,7 +583,8 @@
                 name: document.getElementById('userName').value,
                 email: document.getElementById('userEmail').value,
                 password: document.getElementById('userPass').value,
-                hotel: document.getElementById('userHotel').value
+                role: document.getElementById('userRoleType').value,
+                hotel: document.getElementById('userRoleType').value === 'Global Admin' ? 'All Hotels' : document.getElementById('userHotel').value
             };
 
             try {
@@ -653,6 +664,18 @@
                 if (result.ok && result.tickets) {
                     allTickets = result.tickets;
                     updateStats(allTickets);
+                    
+                    const propSelect = document.getElementById('filterProperty');
+                    if (propSelect && (userRole === 'Super Admin' || userRole === 'Global Admin')) {
+                        const props = [...new Set(allTickets.map(t => t.HotelName).filter(Boolean))].sort();
+                        const currentVal = propSelect.value;
+                        propSelect.innerHTML = '<option value="">All Properties</option>' + props.map(p => `<option value="${p.replace(/"/g, '&quot;')}">${p}</option>`).join('');
+                        if (props.includes(currentVal)) propSelect.value = currentVal;
+                        propSelect.style.display = 'inline-block';
+                    } else if (propSelect) {
+                        propSelect.style.display = 'none';
+                    }
+
                     renderTable(allTickets);
                 } else {
                     throw new Error(result.error || 'Failed to load');
@@ -798,6 +821,7 @@
             const search = document.getElementById('searchInput').value.toLowerCase();
             const priority = document.getElementById('filterPriority').value;
             const status = document.getElementById('filterStatus').value;
+            const property = document.getElementById('filterProperty').value;
 
             const filtered = allTickets.filter(t => {
                 const matchSearch = !search || 
@@ -807,7 +831,8 @@
                     (t.WorkEmail || '').toLowerCase().includes(search);
                 const matchPriority = !priority || t.Priority1 === priority;
                 const matchStatus = !status || (t.Status || 'open').toLowerCase() === status;
-                return matchSearch && matchPriority && matchStatus;
+                const matchProperty = !property || t.HotelName === property;
+                return matchSearch && matchPriority && matchStatus && matchProperty;
             });
 
             renderTable(filtered);
@@ -816,6 +841,7 @@
         document.getElementById('searchInput').addEventListener('input', applyFilters);
         document.getElementById('filterPriority').addEventListener('change', applyFilters);
         document.getElementById('filterStatus').addEventListener('change', applyFilters);
+        document.getElementById('filterProperty').addEventListener('change', applyFilters);
 
         // ── Toast ──
         function showToast(message, color = '#059669') {
