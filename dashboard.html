@@ -684,15 +684,24 @@
         function screenshotCellHtml(t) {
             const link = getScreenshotLink(t);
             if (!link) return '<span class="shot-none">No file</span>';
+            // Full HTTP URL — direct link
             if (/^https?:\/\//i.test(link)) {
-                return `<a class="shot-link" href="${link.replace(/"/g, '&quot;')}" target="_blank" rel="noopener">View</a>`;
+                return `<a class="shot-link" href="${link.replace(/"/g, '&quot;')}" target="_blank" rel="noopener">📎 View</a>`;
             }
-            return `<span class="shot-none" title="${String(link).replace(/"/g, '&quot;')}">File ID</span>`;
+            // Catalyst file-store ID — construct viewer URL
+            const fileId = String(link).trim();
+            if (/^\d+$/.test(fileId)) {
+                const viewerUrl = `https://it-helpdesk1-60068587326.development.catalystserverless.in/server/helpdesk_function/download?fileId=${fileId}`;
+                return `<a class="shot-link" href="${viewerUrl}" target="_blank" rel="noopener">📎 View</a>`;
+            }
+            return `<span class="shot-none" title="${String(link).replace(/"/g, '&quot;')}">Attached</span>`;
         }
 
         function formatDateTimeDisplay(v) {
             if (!v) return '—';
             const str = String(v).trim();
+            // Hide the sentinel placeholder used for mandatory-but-empty close time
+            if (str === '1970-01-01 00:00:00' || str.startsWith('1970-01-01')) return '—';
             if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/.test(str)) return str.slice(0, 19);
             const d = new Date(str);
             if (Number.isNaN(d.getTime())) return str;
@@ -728,7 +737,7 @@
                     <td><span class="badge badge-${priority.toLowerCase()}">${priority}</span></td>
                     <td><span class="badge badge-${status}">${status.charAt(0).toUpperCase() + status.slice(1)}</span></td>
                     <td class="col-datetime">${formatDateTimeDisplay(t.LoggedTimeAndDate)}</td>
-                    <td class="col-datetime">${formatDateTimeDisplay(t.ClosedTimeAndDate)}</td>
+                    <td class="col-datetime">${formatDateTimeDisplay(t.ClosedTimeAndTime)}</td>
                     <td>${screenshotCellHtml(t)}</td>
                     <td>
                         <button class="btn-close-ticket" 
@@ -761,7 +770,7 @@
 
                 if (result.ok) {
                     btn.textContent = '✓ Closed';
-                    const closedIso = result.ClosedTimeAndDate || new Date().toISOString();
+                    const closedIso = result.ClosedTimeAndTime || new Date().toLocaleString('sv-SE', { timeZone: 'Asia/Kolkata' }).replace('T', ' ');
                     const row = btn.closest('tr');
                     const statusCell = row.cells[8];
                     statusCell.innerHTML = '<span class="badge badge-closed">Closed</span>';
@@ -770,7 +779,7 @@
                     const ticket = allTickets.find(t => String(t.id) === String(rowId));
                     if (ticket) {
                         ticket.Status = 'closed';
-                        ticket.ClosedTimeAndDate = closedIso;
+                        ticket.ClosedTimeAndTime = closedIso;
                     }
                     updateStats(allTickets);
                     showToast('✅ Ticket marked as closed!');
