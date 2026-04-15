@@ -456,7 +456,7 @@
                         <th>Logged</th>
                         <th>Closed</th>
                         <th>Screenshot</th>
-                        <th>Action</th>
+                        <th id="actionHeader">Action</th>
                     </tr>
                 </thead>
                 <tbody id="ticketBody"></tbody>
@@ -562,6 +562,11 @@
             document.getElementById('clearAllBtn').style.display = 'inline-block';
             document.getElementById('usersSection').style.display = 'block';
             loadUsers();
+        }
+        
+        if (userRole === 'Global Admin') {
+            const actionHeader = document.getElementById('actionHeader');
+            if (actionHeader) actionHeader.style.display = 'none';
         }
 
         function logout() {
@@ -748,6 +753,18 @@
                 const priority = t.Priority1 || 'Medium';
                 const isClosed = status === 'closed';
 
+                let actionCell = '';
+                if (userRole !== 'Global Admin') {
+                    actionCell = `
+                    <td>
+                        <button class="btn-close-ticket" 
+                            onclick="closeTicket('${t.id}', this)" 
+                            ${isClosed ? 'disabled' : ''}>
+                            ${isClosed ? '✓ Closed' : 'Mark Closed'}
+                        </button>
+                    </td>`;
+                }
+
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td class="col-id">${t.id || (i + 1)}</td>
@@ -762,13 +779,7 @@
                     <td class="col-datetime">${formatDateTimeDisplay(t.LoggedTimeAndDate)}</td>
                     <td class="col-datetime">${formatDateTimeDisplay(t.ClosedTimeAndTime)}</td>
                     <td>${screenshotCellHtml(t)}</td>
-                    <td>
-                        <button class="btn-close-ticket" 
-                            onclick="closeTicket('${t.id}', this)" 
-                            ${isClosed ? 'disabled' : ''}>
-                            ${isClosed ? '✓ Closed' : 'Mark Closed'}
-                        </button>
-                    </td>
+                    ${actionCell}
                 `;
                 tbody.appendChild(row);
             });
